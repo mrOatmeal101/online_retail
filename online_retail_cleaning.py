@@ -95,4 +95,4 @@ df_clean['country'] = df_clean['country'].astype(str)
 # print(df[df['Invoice'] == '541971'])
 # Last step is to export the cleaned data and wrap all the fields in double qutoes.
     # this is to close off open quotes and extra commas in the data. 
-df_clean.to_csv('clean/cleaned_online_retail_II.csv', index=False, quoting=csv.QUOTE_MINIMAL, quotechar='"')
+# df_clean.to_csv('clean/cleaned_online_retail_II.csv', index=False, quoting=csv.QUOTE_MINIMAL, quotechar='"')
