@@ -3,7 +3,7 @@ import pandas as pd
 import csv
 from datetime import datetime
 
-df = pd.read_csv("unclean/test_online_retail.csv")
+df = pd.read_csv("unclean/online_retail_II.csv")
 
 # Making a copy of df to make sure the raw data is not modified. 
 df_clean = df.copy()
@@ -28,6 +28,7 @@ df_clean.columns = df_clean.columns.str.strip().str.lower().str.replace(' ','_')
 df_clean.rename(columns={    
     "invoice":"invoice_number",
     "stockcode":"stock_code",
+    "description":"description_text",
     "invoicedate":"invoice_date"
     }, inplace=True)
 
@@ -58,7 +59,7 @@ df_clean = df_clean.drop_duplicates(subset=['invoice_number', 'stock_code'], kee
 # After seeing that there are missing values you can inspect the missing values again with .isna() and .any()
 # print(df[df.isna().any(axis=1)])
 # After inspection the next step is to replace the missing values with np.nan
-df_clean.replace(['NaN','NA','N/A','null',''], np.nan, inplace=True)
+df_clean.replace(['NA','N/A','null','',' '], np.nan, inplace=True)
 # print(df_clean)
 # print(df[df.isna().any(axis=1)])
 # print(df_clean.info())
@@ -66,13 +67,32 @@ df_clean.replace(['NaN','NA','N/A','null',''], np.nan, inplace=True)
 # The next step is to correct the data types for each column for smooth importing into pandas.
 df_clean['invoice_number'] = df_clean['invoice_number'].astype(str)
 df_clean['stock_code'] = df_clean['stock_code'].astype(str)
-df_clean['description'] = df_clean['description'].astype(str)
+df_clean['description_text'] = df_clean['description_text'].astype(str)
 df_clean['quantity'] = pd.to_numeric(df_clean['quantity'], errors='coerce').astype('Int64')
 df_clean['invoice_date'] = pd.to_datetime(df_clean['invoice_date'], format='%Y-%m-%d %H:%M:%S')
 df_clean['price'] = pd.to_numeric(df_clean['price'], errors='coerce')
 df_clean['customer_id'] = pd.to_numeric(df_clean['customer_id'], errors='coerce').astype('Int64')
 df_clean['country'] = df_clean['country'].astype(str)
 
+# Validating data with SSMS data to ensure complete ingestion. 
+# print(df_clean['quantity'])
+# Double checking data before exporting
+# print(df_clean.info())
+# print(df_clean.count())
+# print(df_clean['customer_id'].isna().sum())
+
+# print(df_clean.head(-10))
+
+# print(df[df.isna().any(axis=1)])
+
+# print(df.isna().sum())
+
+# if df_clean.duplicated(subset=['invoice_number', 'stock_code']).any():
+#     print(df_clean[df_clean.duplicated()])
+# else:
+#     print("no duplicates")
+
+# print(df[df['Invoice'] == '541971'])
 # Last step is to export the cleaned data and wrap all the fields in double qutoes.
     # this is to close off open quotes and extra commas in the data. 
-df_clean.to_csv('clean/cleaned_online_retail_test.csv', index=False, quoting=csv.QUOTE_ALL)
+df_clean.to_csv('clean/cleaned_online_retail_II.csv', index=False, quoting=csv.QUOTE_MINIMAL, quotechar='"')
